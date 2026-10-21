@@ -1,0 +1,129 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.72in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{2em}
+\setlist[itemize]{leftmargin=1.4em,itemsep=2pt,topsep=2pt}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=3pt,topsep=3pt}
+\renewcommand{\arraystretch}{1.16}
+\newcommand{\code}[1]{\path{#1}}
+\newcommand{\pathfile}[1]{\path{#1}}
+\title{IOTA JU Website Redesign\\Orchestrator Guide}
+\author{Project coordination and release responsibility}
+\date{21 October 2026}
+
+\begin{document}
+\maketitle
+
+\section{Purpose and project status}
+This guide is for the person coordinating the four implementation handbooks. It defines decisions, handoffs, approvals and release gates that belong to the orchestrator. The four member documents define the code and evidence each member owns.
+
+The new project folder and Git repository are named \code{iota-ju-next}. The repository contains planning documents at this stage; the application scaffold has not been created. Sourasish owns the first scaffold task. The existing website remains the source of truth until migration and launch are explicitly approved.
+
+\textbf{Architecture selected for planning:} one Next.js App Router application using TypeScript and Node.js, with Payload CMS in the same app. The public website, Payload admin, authentication and content APIs deploy together to Vercel. PostgreSQL and object storage are separate managed services. No separate Express or FastAPI content server is planned. Exact package versions, database provider, storage provider and spending limit are chosen and recorded before provisioning.
+
+\section{The four member assignments}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.18\linewidth}|>{\raggedright\arraybackslash}p{0.32\linewidth}|>{\raggedright\arraybackslash}p{0.38\linewidth}|}
+\hline
+\textbf{Member} & \textbf{Owns} & \textbf{Main areas} \\
+\hline
+Sourasish & Platform and release integration & Next/Payload foundation, shared root configuration, public content readers, preview, cache, redirects, deployment and operations. \\
+\hline
+Ritendu & CMS, permissions and data & Payload collections and globals, access rules, generated types, migrations, relationships and editor workflow. \\
+\hline
+Pritish & Design and public pages & Approved design specification, public layouts and templates, responsive behavior, accessibility and page metadata. His handbook uses smaller step-by-step checklists and plain explanations. \\
+\hline
+Shreyam & Inventory, migration and media & Source manifest, media storage and delivery, import scripts, original preservation, verification and handover runbook. \\
+\hline
+\end{longtable}
+
+Each member writes and runs checks for their own work. The assigned member submits the PR and evidence. Another member reviews it. The orchestrator decides scope and resolves cross-owner questions; that does not make the orchestrator the default implementer or sole tester.
+
+\section{Your responsibilities}
+\begin{enumerate}
+\item \textbf{Keep the shared goal stable.} Confirm that the new site preserves approved wording, names, departments, roles, project order, reports, public links, images and existing club videos. Keep the redesign focused on clearer use and efficient delivery.
+\item \textbf{Set gates and priorities.} Create or maintain the task board using the IDs in the four handbooks. Do not let downstream work depend on undocumented field names, URLs or media props.
+\item \textbf{Make owner decisions.} Approve one visual direction before final styling. Confirm content corrections, identity merges, dates/statuses and retirement responses when source evidence is ambiguous.
+\item \textbf{Control external services.} Confirm the club-owned Vercel account, database and object-storage providers, region, budget, access owners and billing before anyone creates paid resources. Keep staging and production data separate.
+\item \textbf{Protect the existing site.} The new application is separate. Keep the old deployment and its data available for rollback. Excluding workshop Q\&A from the new site does not authorize deleting the old service or its records.
+\item \textbf{Integrate and accept evidence.} Review PRs, make sure migrations and shared files are serialized, deploy merged work to staging, and check the complete publishing flow. Ask the relevant owner to fix defects in their area.
+\item \textbf{Authorize release.} Approve a production domain switch only after the release checklist, content reconciliation, restore rehearsal and rollback steps are complete. Keep the approval and evidence in the repository.
+\end{enumerate}
+
+\textbf{You do not own:} the members' code, their unit tests, the CMS schema implementation, every content import, or routine PR fixes. Do not silently edit their workstreams to make a demo pass. Assign a focused follow-up to the owner.
+
+\section{Decisions you must track}
+Record each decision in a short issue or \pathfile{docs/decisions/} note, with date, owner and affected handbook IDs.
+
+\begin{itemize}
+\item Repository remote and collaborator access. This folder is a local Git repository; no GitHub remote is configured by this work.
+\item Final visual direction. It is not selected yet. Pritish's F01 requires your approval before final page styling.
+\item Compatible Next.js, Payload, React, TypeScript and Node.js versions. Sourasish records the tested matrix and pins it in the lockfile. Payload's current official installation guidance requires Node.js 20.18.1 or newer and a compatible Next.js version; select a supported Node LTS and current compatible stable packages at kickoff.
+\item Vercel project/account and deployment environments; managed PostgreSQL and object storage/CDN provider, region, access controls and spend limit.
+\item Who may edit or publish CMS content, and who receives account recovery messages.
+\item Which uncertain source facts require a content-owner decision. Never invent a date, award, department, identity or current event status.
+\item The approved response for old workshop Q\&A URLs. No new Q\&A service is in scope.
+\end{itemize}
+
+\section{Order of work and integration gates}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.12\linewidth}|>{\raggedright\arraybackslash}p{0.55\linewidth}|>{\raggedright\arraybackslash}p{0.23\linewidth}|}
+\hline
+\textbf{Phase} & \textbf{Work that can proceed} & \textbf{Gate you check} \\
+\hline
+A: Agree and inspect & Sourasish P01 starts after repository location is agreed; Ritendu B01, Pritish F01 and Shreyam M01 can prepare contracts/design/inventory in parallel. & Source revision and content contract are documented; theme is approved before final styling; no service spend yet. \\
+\hline
+B: Foundation & App and protected staging; CMS roles and first project model; shared public shell; media storage preparation and dry-run importer. & A sample project is private by default, and no production data or secrets are in a preview. \\
+\hline
+C: First complete slice & One real project flows from import to CMS draft, authorized preview, admin publish, public list/detail/home teaser and working video. & Demonstrate the entire flow on the merged staging deployment, including cache update and signed-out denial. \\
+\hline
+D: All content & Events, people/memberships, remaining projects, home/About/timeline, media components and public templates. & Every page uses real content; no fixture-only page; questionable source content is resolved or clearly recorded. \\
+\hline
+E: Readiness & Legacy redirects, mobile/accessibility/performance, source parity, backups, restore and editor guide. & Review the evidence checklist, not only a screenshot or successful HTTP response. \\
+\hline
+F: Release & Final content reconciliation, final import, production checks, domain switch and handover. & Your explicit approval is required before production routing changes. \\
+\hline
+\end{longtable}
+
+\section{How to run the team}
+\begin{enumerate}
+\item Keep the current master plan and the four member handbooks in the repository. Put the task ID in each ticket and branch, for example \code{codex/m2-b03-projects}.
+\item Ask each member to take one focused task at a time. The dependency lists in their handbooks are the ordering authority. Work can proceed in parallel only after the shared content/media interfaces are agreed.
+\item Require each PR to state: task ID, files changed, acceptance criteria checked, exact commands run, staging link or screenshot when applicable, and known limits.
+\item Have the file owner review shared files. Sourasish owns root package/configuration/CI and public-reader runtime. After P01, Ritendu owns Payload config, generated types and migration ordering. Shreyam owns Media storage pieces in coordination with Ritendu. Pritish owns site routes and presentation.
+\item Merge schema migrations one at a time. Rebase a task on current main before final checks. Do not overwrite uncommitted work or regenerate shared types from a stale schema.
+\item At the end of each phase, hold a short demo against merged staging and mark the gate in the task board. A branch-only demo does not prove integration.
+\end{enumerate}
+
+\section{Shared technical rules}
+\begin{itemize}
+\item Public reads return published public fields only. Drafts and private media require an authenticated preview path. Never rely on hiding an admin button as authorization.
+\item Use Payload's server-side APIs from the Next.js app. Do not create a second backend or call the same app through its own HTTP endpoint.
+\item Upload large files directly to approved object storage with short-lived permissions. Vercel Functions have a 4.5 MB request/response body limit; the function must not proxy the site's full-size video files.
+\item Keep original videos and images intact. Create delivery copies and posters; do not store large original media in Git. A background-video loop is a prepared media output, not a request-time transcode.
+\item Use named tasks and tests from the member handbooks. The project targets are measured on an actual merged preview; proposed performance targets are not claims about current results.
+\end{itemize}
+
+\section{Release acceptance checklist}
+\begin{itemize}
+\item[\texttt{[ ]}] Every inventoried public page/content item is migrated, intentionally redirected, retained or excluded with a recorded reason.
+\item[\texttt{[ ]}] The old site remains recoverable; the new site has no workshop Q\&A backend or copied participant/payment data.
+\item[\texttt{[ ]}] Signed-out visitors cannot read drafts, admin data or private media; editors and admins pass the role matrix.
+\item[\texttt{[ ]}] Public pages, legacy routes, photos, full demos, reports, embedded media and background footage work on a real device/browser.
+\item[\texttt{[ ]}] Database and media backup restore is rehearsed in isolated staging. A code rollback is not described as a data restore.
+\item[\texttt{[ ]}] Club owns the service accounts and recovery details, and members provide editor/developer handover notes.
+\item[\texttt{[ ]}] You approve the production change and record the release commit, import report, verification evidence and rollback method.
+\end{itemize}
+
+\section{Source notes}
+The task IDs and ownership are expanded in the four companion handbooks in this repository. Current setup references are the official \href{https://nextjs.org/docs/app/getting-started/installation}{Next.js installation guide} and \href{https://payloadcms.com/docs/getting-started/installation}{Payload installation guide}. Vercel's current \href{https://vercel.com/docs/functions/limitations}{function limits} document the 4.5 MB body limit. Checked 21 October 2026. Re-check version compatibility when P01 begins; do not copy an outdated version number into a new install command.
+
+\end{document}
