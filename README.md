@@ -8,11 +8,11 @@ This repository currently contains the team handbooks and architecture decisions
 
 ## Read the right guide
 
-- [Orchestrator guide](main.tex): decisions, team coordination, phase gates, integration and release ownership.
-- [Sourasish: platform and release integration](docs/assignments/sourasish.tex)
-- [Ritendu: CMS, permissions and content data](docs/assignments/ritendu.tex)
-- [Pritish: design and public website](docs/assignments/pritish.tex)
-- [Shreyam: source inventory, migration and media](docs/assignments/shreyam.tex)
+- [Orchestrator guide (PDF)](docs/assignments/orchestrator-guide.pdf) · [LaTeX source](main.tex): decisions, team coordination, phase gates, integration and release ownership.
+- [Sourasish: platform and release integration (PDF)](docs/assignments/sourasish.pdf) · [LaTeX source](docs/assignments/sourasish.tex)
+- [Ritendu: CMS, permissions and content data (PDF)](docs/assignments/ritendu.pdf) · [LaTeX source](docs/assignments/ritendu.tex)
+- [Pritish: design and public website (PDF)](docs/assignments/pritish.pdf) · [LaTeX source](docs/assignments/pritish.tex)
+- [Shreyam: source inventory, migration and media (PDF)](docs/assignments/shreyam.pdf) · [LaTeX source](docs/assignments/shreyam.tex)
 
 The name-to-workstream mapping follows the member order in the request. Pritish's handbook uses shorter, sequential steps and defines technical terms as they appear.
 
@@ -27,7 +27,7 @@ The name-to-workstream mapping follows the member order in the request. Pritish'
 
 ## Reading and compiling the handbooks
 
-Each assignment is a standalone LaTeX file. The files use a plain black-and-white article layout with no custom images or color theme. Open the file in Codex's LaTeX editor to preview and compile it. If compiling locally, use a LaTeX distribution with the standard packages listed in each file's preamble, then run pdflatex main.tex or point pdflatex at the selected member file.
+PDF handbooks are ready to read above; each editable source is a standalone LaTeX file. The handbooks use a plain black-and-white article layout with no custom images or color theme. To rebuild them locally, use a LaTeX distribution with the standard packages listed in each file's preamble, then run pdflatex on the selected source.
 
 ## Start implementation
 
