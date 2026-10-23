@@ -1,0 +1,162 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.72in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{2em}
+\setlist[itemize]{leftmargin=1.4em,itemsep=2pt,topsep=2pt}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=3pt,topsep=3pt}
+\renewcommand{\arraystretch}{1.14}
+\newcommand{\code}[1]{\path{#1}}
+\newcommand{\pathfile}[1]{\path{#1}}
+\title{IOTA JU Redesign\\Ritendu: CMS, Permissions and Content Data}
+\author{Implementation handout}
+\date{21 October 2026}
+\begin{document}
+\maketitle
+
+\section{Your job}
+You own the content models, administrator/editor permissions, validation, relationships, publication hooks and editor instructions. Payload is the content system and admin panel inside the Next.js application. PostgreSQL stores records. Your work lets the public pages read approved content without exposing drafts or private information.
+
+\textbf{In plain terms:} a collection is a type of record, such as Project or Event. A global is one shared record, such as the homepage settings. A migration is a committed database change that can be applied safely to staging and production. A relationship is a link between records, such as a person and several team memberships.
+
+\section{What to install and configure}
+Install Git, the repository's supported Node.js LTS version (at least 20.18.1 for the current Payload requirement) and pnpm. Sourasish owns all root dependencies. Your first setup is:
+\begin{verbatim}
+pnpm install --frozen-lockfile
+pnpm dev
+\end{verbatim}
+Use only the database URL supplied for local development or staging. Do not add a new ORM, SQL client, API server or package unless the team approves it. Do not place database credentials in browser code or commit secrets. Ask Sourasish to change root packages or scripts.
+
+\textbf{Migration commands:} Sourasish adds the Payload CLI script. After a schema change is ready, use \code{pnpm payload migrate:create} to generate a migration and review/commit it. To apply the committed migrations in the selected environment, use \code{pnpm db:migrate}. Never point these commands at production without the release procedure and orchestrator approval.
+
+\section{Folders and ownership}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.40\linewidth}|>{\raggedright\arraybackslash}p{0.50\linewidth}|}
+\hline
+\textbf{Files/folders you own} & \textbf{Purpose} \\
+\hline
+\pathfile{src/payload.config.ts} & Payload configuration after Sourasish completes P01. You own its collection/global registration and migration ordering. \\
+\hline
+\pathfile{src/collections/Users.ts} & Private CMS accounts and Editor/Admin roles. Not public club-member profiles. \\
+\hline
+\pathfile{src/collections/Projects.ts}, \pathfile{src/collections/Events.ts}, \pathfile{src/collections/People.ts}, \pathfile{src/collections/Memberships.ts} & Main editorial records and the link between people, groups and years. \\
+\hline
+\pathfile{src/collections/Milestones.ts}, \pathfile{src/collections/Redirects.ts} & Historical timeline records and exact legacy path decisions. \\
+\hline
+\pathfile{src/globals/Home.ts}, \pathfile{src/globals/About.ts}, \pathfile{src/globals/SiteSettings.ts} & Shared homepage/About/footer/navigation settings. \\
+\hline
+\pathfile{src/access/} & Reusable role/access functions and tests. \\
+\hline
+\pathfile{src/hooks/} & Publication event and relationship validation hooks. \\
+\hline
+\pathfile{src/migrations/}, \pathfile{src/payload-types.ts} & Committed schema changes and generated CMS types. Never hand-edit generated types. \\
+\hline
+\pathfile{docs/content-contract.md}, \pathfile{docs/editor-guide.md} & Agreed data shape and editor handover. \\
+\hline
+\pathfile{tests/permissions.test.ts}, \pathfile{tests/projects.test.ts}, \pathfile{tests/events.test.ts}, \pathfile{tests/memberships.test.ts}, \pathfile{tests/relationships.test.ts} & Tests for your own access rules and data. \\
+\hline
+\end{longtable}
+
+\textbf{Other owners:} Sourasish owns package/config/CI/public readers and starts Payload config before handing it to you. Shreyam owns the Media collection, storage adapter and import scripts; coordinate registration and schema migrations with him. Pritish owns page layout and design.
+
+\section{Shared data contract (B01)}
+Before building collections, create \pathfile{docs/content-contract.md}. Use the real source inventory from Shreyam. Agree the shape with all three other members, especially public fields and media references. Names and slugs are not safe identity keys.
+
+\begin{itemize}
+\item \textbf{Project:} stable legacy key, title, slug, original summary/body, explicit sort order, lifecycle, separate award/program label and award year, media, reports and verified people links. Preserve the known 11-card order, AGV feature and linked historical detail pages.
+\item \textbf{Event:} stable key, title, slug, original body, date/time with its known precision, venue, lifecycle, poster/gallery/reports and an approved action link where one exists.
+\item \textbf{Person:} stable key, name, department, portrait and only approved public contacts/social links.
+\item \textbf{Membership:} person reference, group, academic year, optional role and display order. One person may appear in multiple groups or years.
+\item \textbf{Milestone:} original copy, verified date or year precision, display order and supported relationships.
+\item \textbf{Media:} use Shreyam's contract. Keep public delivery references separate from private masters/draft assets.
+\item \textbf{Globals:} home/About copy and shared site settings, including the official contact email and featured record references.
+\item \textbf{CMS user:} private login, active status and role. Never use this collection for the public team page.
+\item \textbf{Redirect:} exact old path, canonical internal destination and approved HTTP status.
+\end{itemize}
+Keep publication state separate from project/event lifecycle. A completed event can still be published. Keep the Drone Automation lifecycle as Ongoing and preserve the IEEE SSCS 2026 competition labels. Unknown facts remain unknown until the content owner resolves them.
+
+\section{B02: invite-only CMS accounts and permissions}
+Create \pathfile{src/collections/Users.ts}, small access helpers in \pathfile{src/access/}, a role matrix, and \pathfile{tests/permissions.test.ts}.
+
+\textbf{Roles:} Admin can publish/unpublish and manage accounts. Editor can create and revise drafts but cannot publish or grant roles. Anonymous visitors cannot create accounts, edit records, inspect CMS users or read drafts. Keep first-admin bootstrap private and limited to the chosen owner.
+
+\textbf{Steps:}
+\begin{enumerate}
+\item Write role tests for anonymous, Editor and Admin before wiring the UI.
+\item Protect collection read/create/update/delete operations and field-level user role changes.
+\item Check the incoming changed data on create/update. Do not authorize an Editor just because the saved record previously had draft status.
+\item Test direct API operations as well as the Admin UI; hiding a button does not protect the server.
+\item Configure recovery only after the orchestrator assigns a club-owned email provider/account. Keep legacy Q\&A credentials out of the new application.
+\end{enumerate}
+\textbf{Check:} \code{pnpm test -- tests/permissions.test.ts}, then staging browser checks for login, logout and recovery. Attempt to self-promote an Editor and publish with a direct request; both must fail.
+
+\section{B03: Project collection}
+Create \pathfile{src/collections/Projects.ts}, a migration, fixture and \pathfile{tests/projects.test.ts}. Agree the public fields with Sourasish and Pritish; coordinate media references with Shreyam.
+
+Keep lifecycle (for example, Ongoing or Completed) separate from award/program label and year. Preserve the original copy and established order. Require a unique slug for public detail routes. Allow incomplete authorized drafts, but validate required fields before publishing. Do not accept an arbitrary client-provided internal key as identity.
+
+\textbf{Check:} test create/update, duplicate slug, invalid publish, saved draft while live version remains unchanged, unpublish, award label/year and changed slug. Send the agreed publication event to Sourasish with record type, ID, old/new slug and changed public relationships.
+
+\section{B04: Event collection}
+Create \pathfile{src/collections/Events.ts}, migration and \pathfile{tests/events.test.ts}. Keep date information precise: if the source only says a year or has no date, do not invent a full date. Define and document the timezone rule before deriving whether something is upcoming.
+
+Separate editorial publication from the event lifecycle. A historical event can remain published. Add an action link only when approved by the content owner. Do not recreate expired registration/live actions or invent a countdown/Innovatia status.
+
+\textbf{Check:} include completed-but-published, unknown date, date boundary, postponed/cancelled state and invalid external URL. Confirm the result does not change merely because a timezone differs.
+
+\section{B05: People and Memberships}
+Create \pathfile{src/collections/People.ts}, \pathfile{src/collections/Memberships.ts}, migrations and \pathfile{tests/memberships.test.ts}. Keep one confirmed person with multiple linked memberships instead of copying a new person record for every team group.
+
+Only merge identities after review. Similar names do not prove two entries are the same person. Preserve the verified department/role for every membership; retain Raunak Panja's Electrical Engineering and Ritendu's corrected department text. Alumni history belongs in verified memberships, not fabricated fields.
+
+\textbf{Check:} one person shown in two groups retains both roles/orders; same-name different people stay distinct; deleting a referenced person is blocked or requires a safe relationship change. Coordinate with Shreyam on the source identity review.
+
+\section{B06a: Home, About and shared settings}
+Create \pathfile{src/globals/Home.ts}, \pathfile{src/globals/About.ts}, \pathfile{src/globals/SiteSettings.ts}, migrations and focused tests. Agree exact fields with Pritish first. Store content and selected media/record references, not arbitrary custom HTML or page CSS.
+
+Use one shared source for navigation/footer and the official email \code{iotajuofficial@gmail.com}. Do not select an unpublished or draft project/event as a public featured item. Notify Sourasish when changes must refresh cached public pages.
+
+\textbf{Check:} change the contact email and a featured record in staging, verify every page consuming it, and verify anonymous reads return no draft or private media URL.
+
+\section{B06b: Milestones and Redirects}
+Create \pathfile{src/collections/Milestones.ts}, \pathfile{src/collections/Redirects.ts}, migrations and focused validation tests. Use Shreyam's source inventory. Sourasish owns redirect runtime.
+
+Preserve only the source's actual date precision. Redirects must point to a canonical internal path; block obvious loops and external open redirects. Only authorized editors/admins may change these records.
+
+\textbf{Check:} source-derived milestone fixtures, invalid destination, self-loop and a two-record loop. Coordinate deployed path tests with Sourasish.
+
+\section{B07: relationship safety and publication events}
+Create focused hooks under \pathfile{src/hooks/}, reference guards and \pathfile{tests/relationships.test.ts}. Work with Sourasish on when a publication notification is safe to send relative to a committed write.
+
+Before publishing, validate selected media and linked records are approved and public. A nested relationship must not expose a private/draft CDN URL. On person, event, global or media change, list which public pages must refresh. Prevent hard deletion of referenced records or media unless references have been safely resolved.
+
+\textbf{Check:} update a person shown in several groups; unpublish a featured item; revoke a media item; change a slug; confirm stale public links and media access are removed. Make hook failures visible to operators.
+
+\section{B08: editor guide and handover}
+After the pages and imports are available, create \pathfile{docs/editor-guide.md} and \pathfile{tests/e2e/editorial.spec.ts}. Rehearse with a club Editor: revise a project, event and member; preview a draft; have an Admin publish; restore a revision; unpublish; and hand the year's membership to another editor.
+
+Explain how to prepare/upload approved media, add safe links, recover a failed publish and remove access when members leave. Do not promise that the app automatically transcodes large videos.
+
+\textbf{Check:} an editor who did not write the guide completes the rehearsal without help. Confirm draft privacy through direct API requests, not only the visible page.
+
+\section{Rules for your changes}
+\begin{itemize}
+\item Use Payload's generated types. Regenerate and commit them from the current config; never edit generated type output by hand.
+\item Put schema changes in committed migrations. Apply them to an isolated database first.
+\item Public local API calls must explicitly enforce access. Payload Local API defaults can bypass access rules when \code{overrideAccess} is not disabled; readers must not assume collection permissions automatically protect each server-side call.
+\item Do not create public user accounts, a second authentication service, a separate ORM or a new backend.
+\item Ask Sourasish before changing package/config/CI files. Do not overwrite Shreyam's Media adapter or import edits.
+\end{itemize}
+
+\section{Official references}
+Use the official \href{https://payloadcms.com/docs/getting-started/installation}{Payload installation guide}, \href{https://payloadcms.com/docs/access-control/overview}{access control guide}, \href{https://payloadcms.com/docs/local-api/access-control}{Local API access-control guide}, and \href{https://payloadcms.com/docs/database/migrations}{database migration guide} for version-specific details. The current guide requires Node.js 20.18.1 or newer. Check these again against the package version pinned by Sourasish.
+
+\end{document}

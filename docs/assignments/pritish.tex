@@ -1,0 +1,170 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.72in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{2em}
+\setlist[itemize]{leftmargin=1.4em,itemsep=2pt,topsep=2pt}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=3pt,topsep=3pt}
+\renewcommand{\arraystretch}{1.14}
+\newcommand{\code}[1]{\path{#1}}
+\newcommand{\pathfile}[1]{\path{#1}}
+\title{IOTA JU Redesign\\Pritish: Design and Public Website}
+\author{Step-by-step implementation handout}
+\date{21 October 2026}
+\begin{document}
+\maketitle
+
+\section{Your job}
+You build the public pages people visit: home, projects, events, team, alumni, timeline and About. You also own their shared header/footer, page styling and mobile/accessibility checks.
+
+\textbf{This guide is written to follow one step at a time.} You do not need to configure the database or CMS. Sourasish provides functions that read safe public content. Ritendu defines the content fields. Shreyam provides the image/video/report components. You connect these pieces and present them clearly.
+
+\textbf{Simple definitions:} a route is a page URL; a component is a reusable page part, like a project card; a template is a layout used by several records; CMS means the staff editing panel. A server component can load content before sending the page. Use it by default; only make a browser-side component when the user needs an interaction.
+
+\section{What to install}
+Install Git, the repository's supported Node.js LTS release (minimum 20.18.1 under the current Payload requirement) and pnpm. Do not install another copy of React, Next.js, Payload or a CSS framework. Sourasish owns package installation and the shared lockfile.
+\begin{verbatim}
+pnpm install --frozen-lockfile
+pnpm dev
+\end{verbatim}
+Open the local site URL printed by the dev command. Ask Sourasish for a working staging environment if content readers need a database. Do not add a UI component library or icon package without agreeing it with Sourasish and the design owner.
+
+\section{Only edit these areas}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.41\linewidth}|>{\raggedright\arraybackslash}p{0.49\linewidth}|}
+\hline
+\textbf{Files/folders} & \textbf{Your use} \\
+\hline
+\pathfile{docs/design-spec.md} & Record the approved visual rules before final styling. \\
+\hline
+\pathfile{src/app/(site)/layout.tsx}, \pathfile{src/app/(site)/globals.css} & One shared public-site shell and its base CSS. \\
+\hline
+\pathfile{src/styles/tokens.css} & Plain CSS variables for spacing, type sizes, colors and image ratios from the approved direction. \\
+\hline
+\pathfile{src/components/site/} & Header, footer, cards, section headings and page-specific presentation. \\
+\hline
+\pathfile{src/app/(site)/page.tsx} & Homepage. \\
+\hline
+\pathfile{src/app/(site)/projects/page.tsx}, \pathfile{src/app/(site)/projects/[slug]/page.tsx} & Project list and project detail. \\
+\hline
+\pathfile{src/app/(site)/events/page.tsx}, \pathfile{src/app/(site)/events/[slug]/page.tsx} & Event list and event detail. \\
+\hline
+\pathfile{src/app/(site)/team/page.tsx}, \pathfile{src/app/(site)/alumni/page.tsx} & Current team and alumni. \\
+\hline
+\pathfile{src/app/(site)/timeline/page.tsx}, \pathfile{src/app/(site)/about/page.tsx} & Timeline and About. \\
+\hline
+\pathfile{docs/ui-acceptance.md}, \pathfile{tests/e2e/} & Browser evidence for mobile, keyboard, routes and page behavior. \\
+\hline
+\end{longtable}
+Do not edit Payload collections, access rules, package files, media storage or the importer. Ask the owner if something is missing instead of copying it into your page.
+
+\section{F01: agree the look before building pages}
+First inspect the current site and Shreyam's content inventory. Create \pathfile{docs/design-spec.md} with: approved font choices, typography sizes, spacing, colors, photo/video shapes, buttons, card layout, navigation, mobile changes, focus states and reduced-motion behavior.
+
+Show the homepage with the real campus video/poster, one real project detail and long team names and departments at desktop and at 360 and 390 pixel mobile widths. Use actual IOTA media. Do not create synthetic people, project photos or replacement text.
+
+\textbf{Wait for the orchestrator to approve one direction before final styling.} The visual direction is still open. You can prepare wireframes and content hierarchy while it is being reviewed. Do not treat a concept image as verified content.
+
+\section{F02: shared shell and navigation}
+\textbf{Create these files:}
+\begin{itemize}
+\item \pathfile{src/app/(site)/layout.tsx} and \pathfile{src/app/(site)/globals.css}
+\item \pathfile{src/styles/tokens.css}
+\item \pathfile{src/components/site/site-header.tsx}
+\item \pathfile{src/components/site/mobile-nav.tsx}
+\item \pathfile{src/components/site/site-footer.tsx}
+\end{itemize}
+
+\begin{enumerate}
+\item Make every public page use the same header, footer and content width.
+\item Add the official logo/favicon and footer email \code{iotajuofficial@gmail.com}.
+\item Make the mobile menu open/close by keyboard and pointer, with a visible focus indicator.
+\item Use normal links for navigation and highlight the current section.
+\item Keep text and navigation available if a video does not load. Do not show a full-page spinner while images load.
+\end{enumerate}
+\textbf{Check:} open every route directly at 360, 390, 768 and 1440 pixels; tab through the header and footer. Ask Sourasish to run the production build.
+
+\section{F03: project list and one detail page}
+Wait until Ritendu's Project fields and Sourasish's published project reader exist. Shreyam supplies the real TemperLink data and media. Use the shared reader; do not fetch the app's own API over HTTP.
+
+\textbf{Create these files:}
+\begin{itemize}
+\item \pathfile{src/app/(site)/projects/page.tsx}
+\item \pathfile{src/app/(site)/projects/[slug]/page.tsx}
+\item \pathfile{src/components/site/project-card.tsx}
+\item Add the home teaser to \pathfile{src/app/(site)/page.tsx}.
+\end{itemize}
+
+\begin{enumerate}
+\item Render one real project card from CMS data.
+\item Render the matching detail page with real copy and media.
+\item Preserve explicit order. Keep lifecycle (Ongoing or Completed) separate from the award or program label, such as IEEE SSCS 2026.
+\item Add states for empty content, missing images, long copy and unknown slugs. An unknown slug must show a real not-found page.
+\item Add one real project teaser to the homepage; the complete homepage comes in F06.
+\end{enumerate}
+\textbf{Check:} \code{pnpm test:e2e -- tests/e2e/projects.spec.ts}. Test a long title, missing optional media and a made-up slug. Complete the joint demo with Sourasish preview/publish and Shreyam import/video.
+
+\section{F04: team and alumni}
+\textbf{Create these files:}
+\begin{itemize}
+\item \pathfile{src/app/(site)/team/page.tsx}
+\item \pathfile{src/app/(site)/alumni/page.tsx}
+\item \pathfile{src/components/site/person-card.tsx}
+\end{itemize}
+Add focused browser checks in the test files listed below.
+
+Render a person through their memberships so the same person can appear in more than one group. Preserve names, departments, roles, group order, real portraits and approved social/contact links. Never fill a missing field with a guessed role or photo.
+
+\textbf{Layout rule:} show four faculty cards in one row on large desktop. On phone-sized screens, use two readable columns when space allows and a one-column fallback on very narrow screens. Names and long departments must wrap without clipping; text must not become tiny just to fit more cards.
+
+\textbf{Check:} \code{pnpm test:e2e -- tests/e2e/team-alumni.spec.ts}. Inspect 320/360/390/768/1440 pixel widths, long departments, missing portraits and one person appearing in several groups.
+
+\section{F05: event list and detail}
+\textbf{Create these files:}
+\begin{itemize}
+\item \pathfile{src/app/(site)/events/page.tsx}
+\item \pathfile{src/app/(site)/events/[slug]/page.tsx}
+\item \pathfile{src/components/site/event-card.tsx}
+\end{itemize}
+Use the event fields from Ritendu and media components from Shreyam.
+
+Preserve source text, dates and unknown date precision. Do not invent a date or whether an event is currently open. Do not restore old Register Now/Live Portal actions. Add an action only when an owner-approved URL exists. Keep poster, report, full demo and external embed links usable on mobile.
+
+\textbf{Check:} \code{pnpm test:e2e -- tests/e2e/events.spec.ts}. Include one historical event, one event with unknown date, one PDF, one long description and broken optional media.
+
+\section{F06: complete home page with existing video}
+Extend the F03 teaser on \pathfile{src/app/(site)/page.tsx} using the homepage content and featured references from Ritendu. Use the original club/campus footage through Shreyam's background-video component. Keep original text and a readable poster fallback.
+
+The first screen must show useful text immediately. Provide pause/play controls; respect reduced motion and data saving. Off-screen and below-fold video must not all download at page load.
+
+\textbf{Check:} \code{pnpm test:e2e -- tests/e2e/home.spec.ts}. Test slow network, autoplay denied, reduced motion and a CMS change to a featured project.
+
+\section{F07: About and timeline}
+Create \pathfile{src/app/(site)/about/page.tsx} and \pathfile{src/app/(site)/timeline/page.tsx}. Use the approved source text, milestones and actual dates from CMS. A year-only source remains year-only.
+
+Keep content accessible without animation. Use an intentional empty state if there are no published milestones; do not expose drafts through linked records.
+
+\textbf{Check:} \code{pnpm test:e2e -- tests/e2e/about-timeline.spec.ts}. Compare visible copy to the source inventory, check keyboard reading order and reduced motion.
+
+\section{F08: final page checks}
+Create \pathfile{docs/ui-acceptance.md}. Test all pages from the merged staging branch on mobile, tablet and desktop. Check keyboard focus, accessible names, contrast, text overflow, image dimensions, working links, actual video playback, page titles and descriptions, favicon and not-found states. Record measured results and device/network conditions honestly.
+
+\textbf{Check:} run the page-specific Playwright flows on staging; inspect the browser console; verify performance with the agreed tool. A screenshot or HTTP 200 alone does not prove a page is correct.
+
+\section{Your order and handoffs}
+Work in this order: F01 approval; F02 shared shell; F03 project slice; F04 team/alumni and F05 events; F06 full home; F07 About/timeline; F08 final acceptance. You may sketch page structure earlier, but do not block on CMS fields when the shared contract is still being agreed.
+
+Ask Sourasish for a missing public read function, Ritendu for a missing/unclear field and Shreyam for a missing media control. Only Pritish owns styling and page layout. Make small PRs, one route or page slice at a time, and include the exact browser sizes and routes checked.
+
+\section{Official references}
+Use the official \href{https://nextjs.org/docs/app/getting-started}{Next.js App Router guides} for route files and server components. The installed Next/React versions are pinned by Sourasish. Payload currently requires Node.js 20.18.1 or newer; re-check the official \href{https://nextjs.org/docs/app/getting-started/installation}{installation guide} before local setup.
+
+\end{document}
