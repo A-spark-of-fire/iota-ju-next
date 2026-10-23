@@ -4,10 +4,8 @@ This repository holds the plan and code for the new IOTA JU website. The old web
 
 ## Current status
 
-The main branch has the project handbooks and planning files. The app has not been added to main yet. PR #1 and PR #2 need changes before they can be merged. See the [team work guide](docs/coordination-plan.md) for the current status and the next steps.
-## Current state
-
 This repository contains the team handbooks and the initial Next.js App Router and Payload CMS scaffold, environment validation, and CI quality workflow. No paid provider, production resource or production domain has been configured.
+The main branch has the project handbooks and planning files. The app has not been added to main yet. PR #1 and PR #2 need changes before they can be merged. See the [team work guide](docs/coordination-plan.md) for the current status and the next steps.
 
 ## Start here
 
@@ -31,20 +29,6 @@ This repository contains the team handbooks and the initial Next.js App Router a
 
 Sourasish can build the app foundation, Ritendu can fix the content and permission rules, and Shreyam can inventory the old website at the same time. Pritish can start page work after the app and the content fields are ready.
 
-Read the team work guide before starting.
-The name-to-workstream mapping follows the member order in the request. Pritish's handbook uses shorter, sequential steps and defines technical terms as they appear.
-
-## Shared project decisions
-
-- Keep the existing website live and available for rollback.
-- Preserve approved text, people, departments, roles, project ordering, reports, links, images and existing videos.
-- Do not copy original media archives, production secrets, participant data or the legacy workshop Q&A backend into this repository.
-- Keep Next.js and Payload in the same application. Do not add a second Express or FastAPI service.
-- Use a managed PostgreSQL database and object storage/CDN. Provider choice and spend limit must be approved before provisioning.
-- Use a supported Node.js LTS release (Payload currently requires at least 20.18.1) and pnpm. Sourasish records the exact compatible package versions in the lockfile when implementation starts.
-
-## Reading and compiling the handbooks
-
 PDF handbooks are ready to read above; each editable source is a standalone LaTeX file. The handbooks use a plain black-and-white article layout with no custom images or color theme. To rebuild them locally, use a LaTeX distribution with the standard packages listed in each file's preamble, then run pdflatex on the selected source.
 
 ## Start implementation
@@ -53,3 +37,4 @@ PDF handbooks are ready to read above; each editable source is a standalone LaTe
 2. Extend the application foundation while retaining the existing docs/ and main.tex.
 3. The members work from their task IDs and file ownership tables. Each PR includes its checks and a staging demonstration when relevant.
 4. Do not switch the public domain until the orchestrator approves the release gate.
+Read the team work guide before starting.
