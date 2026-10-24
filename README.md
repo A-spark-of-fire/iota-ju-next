@@ -4,7 +4,7 @@ This is the separate local Git repository for planning and implementing the rede
 
 ## Current state
 
-This repository currently contains the team handbooks and architecture decisions. The application has **not** been scaffolded yet. Sourasish owns the initial app scaffold. No GitHub remote, paid provider, production resource or production domain has been configured.
+This repository contains the team handbooks and the initial Next.js App Router and Payload CMS scaffold, environment validation, and CI quality workflow. No paid provider, production resource or production domain has been configured.
 
 ## Read the right guide
 
@@ -32,6 +32,6 @@ PDF handbooks are ready to read above; each editable source is a standalone LaTe
 ## Start implementation
 
 1. The orchestrator records the remote-repository decision, confirms Vercel/database/storage ownership and budget, and assigns the first phase.
-2. Sourasish creates the application foundation in this repository while retaining the existing docs/ and main.tex.
+2. Extend the application foundation while retaining the existing docs/ and main.tex.
 3. The members work from their task IDs and file ownership tables. Each PR includes its checks and a staging demonstration when relevant.
 4. Do not switch the public domain until the orchestrator approves the release gate.

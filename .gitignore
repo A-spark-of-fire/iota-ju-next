@@ -24,6 +24,4 @@ test-results/
 *.out
 *.synctex.gz
 *.toc
-\
-tsconfig.tsbuildinfo\
-
+tsconfig.tsbuildinfo
