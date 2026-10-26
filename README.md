@@ -1,19 +1,37 @@
-# IOTA JU website redesign
+# IOTA JU new website
 
-This is the separate local Git repository for planning and implementing the redesigned IOTA JU website. The redesign is planned as a Next.js App Router and Payload CMS application. The public site, CMS admin, authentication and content APIs will run in one Vercel project. PostgreSQL and object storage will be separate managed services.
+This repository holds the plan and code for the new IOTA JU website. The old website stays available until the new one is ready.
 
+## Current status
+
+The main branch has the project handbooks and planning files. The app has not been added to main yet. PR #1 and PR #2 need changes before they can be merged. See the [team work guide](docs/coordination-plan.md) for the current status and the next steps.
 ## Current state
 
 This repository contains the team handbooks and the initial Next.js App Router and Payload CMS scaffold, environment validation, and CI quality workflow. No paid provider, production resource or production domain has been configured.
 
-## Read the right guide
+## Start here
 
-- [Orchestrator guide (PDF)](docs/assignments/orchestrator-guide.pdf) · [LaTeX source](main.tex): decisions, team coordination, phase gates, integration and release ownership.
-- [Sourasish: platform and release integration (PDF)](docs/assignments/sourasish.pdf) · [LaTeX source](docs/assignments/sourasish.tex)
-- [Ritendu: CMS, permissions and content data (PDF)](docs/assignments/ritendu.pdf) · [LaTeX source](docs/assignments/ritendu.tex)
-- [Pritish: design and public website (PDF)](docs/assignments/pritish.pdf) · [LaTeX source](docs/assignments/pritish.tex)
-- [Shreyam: source inventory, migration and media (PDF)](docs/assignments/shreyam.pdf) · [LaTeX source](docs/assignments/shreyam.tex)
+- [Team work guide](docs/coordination-plan.md): who can work now, what depends on what, copy-ready instructions for coding agents, and how to review PRs.
+- [Orchestrator guide](main.tex): decisions, team roles and release steps.
+- [Sourasish handbook](docs/assignments/sourasish.pdf) · [editable copy](docs/assignments/sourasish.tex)
+- [Ritendu handbook](docs/assignments/ritendu.pdf) · [editable copy](docs/assignments/ritendu.tex)
+- [Pritish handbook](docs/assignments/pritish.pdf) · [editable copy](docs/assignments/pritish.tex)
+- [Shreyam handbook](docs/assignments/shreyam.pdf) · [editable copy](docs/assignments/shreyam.tex)
 
+## Main project choices
+
+- The new site will use Next.js and Payload CMS in one app. Payload is the admin tool for editing site content.
+- PostgreSQL stores the content. Object storage and a CDN serve large files such as images and videos.
+- Keep the old website available so the team can roll back if needed.
+- Do not move workshop Q&A data or code into the new app. Do not delete the old Q&A service or data.
+- Do not create paid hosting, database or storage accounts until the orchestrator approves the owner and budget.
+- Do not move the public domain until the orchestrator approves the release.
+
+## Start work
+
+Sourasish can build the app foundation, Ritendu can fix the content and permission rules, and Shreyam can inventory the old website at the same time. Pritish can start page work after the app and the content fields are ready.
+
+Read the team work guide before starting.
 The name-to-workstream mapping follows the member order in the request. Pritish's handbook uses shorter, sequential steps and defines technical terms as they appear.
 
 ## Shared project decisions
