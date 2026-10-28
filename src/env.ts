@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const envSchema = z.object({
+export const envSchema = z.object({
   DATABASE_URL: z
     .string()
     .min(1, 'DATABASE_URL is required')
@@ -11,11 +11,8 @@ const envSchema = z.object({
   SERVER_URL: z
     .string()
     .min(1, 'SERVER_URL is required')
-    .url('SERVER_URL must be a valid URL'),
+    .url('SERVER_URL must be a valid URL')
+    .default('http://localhost:3000'),
 });
 
-export const env = envSchema.parse({
-  DATABASE_URL: process.env.DATABASE_URL,
-  PAYLOAD_SECRET: process.env.PAYLOAD_SECRET,
-  SERVER_URL: process.env.SERVER_URL || 'http://localhost:3000',
-});
+export const env = envSchema.parse(process.env);
