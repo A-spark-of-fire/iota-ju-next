@@ -16,7 +16,21 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Immediate next steps (24 October 2026):
+
+- [Sourasish: app foundation (PDF)](docs/next-steps/sourasish/sourasish-next-steps.pdf) · [LaTeX source](docs/next-steps/sourasish/main.tex)
+- [Ritendu: CMS and permissions (PDF)](docs/next-steps/ritendu/ritendu-next-steps.pdf) · [LaTeX source](docs/next-steps/ritendu/main.tex)
+- [Shreyam: old-site inventory (PDF)](docs/next-steps/shreyam/shreyam-next-steps.pdf) · [LaTeX source](docs/next-steps/shreyam/main.tex)
+- [Pritish: frontend timing (PDF)](docs/next-steps/pritish/pritish-next-steps.pdf) · [LaTeX source](docs/next-steps/pritish/main.tex)
+
+Read the team guide and your handbook before starting.
+
+- [Team work guide](docs/coordination-plan.md): who can work now, what depends on what, copy-ready instructions for coding agents, and how to review PRs.
+- [Orchestrator guide](main.tex): decisions, team roles and release steps.
+- [Sourasish handbook](docs/assignments/sourasish.pdf) · [editable copy](docs/assignments/sourasish.tex)
+- [Ritendu handbook](docs/assignments/ritendu.pdf) · [editable copy](docs/assignments/ritendu.tex)
+- [Pritish handbook](docs/assignments/pritish.pdf) · [editable copy](docs/assignments/pritish.tex)
+- [Shreyam handbook](docs/assignments/shreyam.pdf) · [editable copy](docs/assignments/shreyam.tex)
 
 ## End-to-end testing
 
