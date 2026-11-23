@@ -2,7 +2,7 @@ name: Quality Gate (CI)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feat/p01-p02 ]
   pull_request:
     branches: [ main ]
 
